@@ -25,18 +25,7 @@ module.exports = class GateOS {
     this.io = io;
     this.socket = socket;
 
-    const session = {
-      user: {
-        _id: '',
-        username: '',
-        email: '',
-      },
-      connected: false,
-      save: () => {},
-    }
-
-    /** @type {session} */
-    this.session = Object.assign(session, socket.handshake.session);
+    this.session = socket.handshake.session;
 
     this.state = {
       command: '',
@@ -126,6 +115,19 @@ module.exports = class GateOS {
   end() {
     this.socket.emit('end');
     this.resetState();
+
+    return this;
+  }
+
+  /**
+   * @param {string} cmd
+   */
+  help(cmd) {
+    if (commands.help) {
+      commands.help.call(this, cmd.split(' '));
+    } else {
+      this.end();
+    }
 
     return this;
   }
